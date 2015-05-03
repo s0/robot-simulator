@@ -1,10 +1,8 @@
 package com.samlanning.robot_simulator.simulator;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 
-import com.samlanning.robot_simulator.iface.Robot;
 import com.samlanning.robot_simulator.maps.BasicMap;
 import com.samlanning.robot_simulator.maps.RobotMap;
 import com.samlanning.robot_simulator.robots.RobotsEnum;
@@ -13,17 +11,13 @@ import com.samlanning.robot_simulator.simulator.executor.SimulatorExecutor;
 
 public class CLISimulator {
     
-    private final Map<Robot, RobotState> robots;
-    private final Map<Robot, String> robotNames;
+    private final EnumMap<RobotsEnum, RobotState> robots;
     
     public CLISimulator(RobotMap map) {
-        this.robots = new HashMap<>();
-        this.robotNames = new HashMap<>();
+        this.robots = new EnumMap<>(RobotsEnum.class);
         
         for (RobotsEnum robot : RobotsEnum.values()) {
-            System.out.println(robot.robot);
-            this.robots.put(robot.robot, null);
-            this.robotNames.put(robot.robot, robot.name());
+            this.robots.put(robot, null);
         }
         
         SimulatorExecutor executor =
@@ -45,9 +39,9 @@ public class CLISimulator {
     public class ExecutorListener implements SimulatorExecutor.Listener {
         
         @Override
-        public synchronized void newRobotState(Robot robot, RobotState state) {
-            System.out.format("Robot: %s at (%d, %d) facing %s and: %s\n",
-                robotNames.get(robot), state.x, state.y, state.direction, state.status);
+        public synchronized void newRobotState(RobotsEnum robot, RobotState state) {
+            System.out.format("Robot: %s at (%d, %d) facing %s and: %s\n", robot, state.x, state.y,
+                state.direction, state.status);
             
         }
         

@@ -1,5 +1,7 @@
 package com.samlanning.robot_simulator.robots;
 
+import java.awt.Color;
+
 import com.samlanning.robot_simulator.iface.Robot;
 
 /**
@@ -7,12 +9,17 @@ import com.samlanning.robot_simulator.iface.Robot;
  */
 public enum RobotsEnum {
     
-    EMPTY(new EmptyRobot()),
+    //EMPTY(new EmptyRobot(), new Color(100, 100, 100)),
+    RANDOM_1(new RandomRobot(), new Color(0, 100, 100)),
+    RANDOM_2(new RandomRobot(), new Color(100, 0, 100)),
+    RANDOM_3(new RandomRobot(), new Color(100, 100, 0)),
     ;
     
     public final Robot robot;
+    public final Color color;
     
-    private RobotsEnum(Robot robot){
+    private RobotsEnum(Robot robot, Color color){
         this.robot = robot;
+        this.color = color;
     }
 }

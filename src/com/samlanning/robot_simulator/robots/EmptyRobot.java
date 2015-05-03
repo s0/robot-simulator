@@ -20,7 +20,7 @@ public class EmptyRobot implements Robot {
             }.start();
         }
         
-        //dos(control);
+        dos(control);
     }
     
     public void dos(RobotControl control) {

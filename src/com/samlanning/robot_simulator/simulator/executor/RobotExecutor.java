@@ -2,10 +2,10 @@ package com.samlanning.robot_simulator.simulator.executor;
 
 import java.util.concurrent.Semaphore;
 
-import com.samlanning.robot_simulator.iface.Robot;
 import com.samlanning.robot_simulator.iface.RobotControl;
 import com.samlanning.robot_simulator.maps.MapBlock;
 import com.samlanning.robot_simulator.maps.RobotMap;
+import com.samlanning.robot_simulator.robots.RobotsEnum;
 import com.samlanning.robot_simulator.simulator.executor.SimulatorExecutor.Listener;
 import com.samlanning.robot_simulator.simulator.executor.exceptions.CrashedException;
 import com.samlanning.robot_simulator.simulator.executor.exceptions.InternalStopException;
@@ -16,14 +16,14 @@ class RobotExecutor extends Thread {
     private final RobotMap map;
     private final Listener listener;
     private final SimulatorExecutor.State state;
-    private final Robot robot;
+    private final RobotsEnum robot;
     
     private int x = 0;
     private int y = 0;
     private Direction direction = Direction.LEFT;
     private boolean running = true;
     
-    public RobotExecutor(RobotMap map, Listener listener, SimulatorExecutor.State state, Robot robot) {
+    public RobotExecutor(RobotMap map, Listener listener, SimulatorExecutor.State state, RobotsEnum robot) {
         this.map = map;
         this.listener = listener;
         this.state = state;
@@ -58,7 +58,7 @@ class RobotExecutor extends Thread {
         
         // Start execution of robot
         try {
-            robot.run(new RobotControlImpl());
+            robot.robot.run(new RobotControlImpl());
         } catch (InternalStopException e) {
             System.out.println("Robot Executor Stopped By Simulator");
             return;
@@ -99,6 +99,12 @@ class RobotExecutor extends Thread {
         updateListener(RobotState.Status.RUNNING);
     }
     
+    private synchronized MapBlock doLookAhead() {
+        int newX = x + direction.vectorX();
+        int newY = y + direction.vectorY();
+        return getBlockAt(newX, newY);
+    }
+    
     private class RobotControlImpl implements RobotControl {
         
         /**
@@ -130,8 +136,7 @@ class RobotExecutor extends Thread {
         
         @Override
         public MapBlock lookAhead() {
-            // TODO Auto-generated method stub
-            return null;
+            return doLookAhead();
         }
         
         private void start() {

@@ -4,19 +4,19 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.samlanning.robot_simulator.iface.Robot;
 import com.samlanning.robot_simulator.maps.RobotMap;
+import com.samlanning.robot_simulator.robots.RobotsEnum;
 import com.samlanning.robot_simulator.simulator.executor.exceptions.StoppedException;
 
 public class SimulatorExecutor {
     
-    private final Robot[] robots;
+    private final RobotsEnum[] robots;
     private final RobotExecutor[] robotExecutors;
     
     private State state = new State();
     
-    public SimulatorExecutor(RobotMap map, Collection<Robot> robots, Listener listener) {
-        this.robots = robots.toArray(new Robot[robots.size()]);
+    public SimulatorExecutor(RobotMap map, Collection<RobotsEnum> robots, Listener listener) {
+        this.robots = robots.toArray(new RobotsEnum[robots.size()]);
         this.robotExecutors = new RobotExecutor[this.robots.length];
         
         for (int i = 0; i < this.robots.length; i++) {
@@ -34,14 +34,14 @@ public class SimulatorExecutor {
     }
     
     public static interface Listener {
-        public void newRobotState(Robot robot, RobotState state);
+        public void newRobotState(RobotsEnum robot, RobotState state);
     }
     
     protected static class State {
         
         private boolean running = false;
         private boolean stopped = false;
-        private long interval = 1000;
+        private long interval = 100;
         
         private Set<Thread> sleeping = new HashSet<>();
         

@@ -4,9 +4,13 @@ public class BasicMap extends RobotMap {
     
     public BasicMap(){
         MapBlock[][] map = new MapBlock[][]{
-            {MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, },
-            {MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, },
-            {MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, },
+            {MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, },
+            {MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, },
+            {MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, },
+            {MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, },
+            {MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.WALL, MapBlock.EMPTY, MapBlock.EMPTY, },
+            {MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, },
+            {MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, MapBlock.EMPTY, },
         };
         
         this.setMap(map);
