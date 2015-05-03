@@ -4,12 +4,18 @@ public final class RobotState {
     public final int x;
     public final int y;
     public final Direction direction;
-    public final boolean running;
+    public final Status status;
     
-    protected RobotState(int x, int y, Direction direction, boolean running){
+    protected RobotState(int x, int y, Direction direction, Status status){
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.running = running;
+        this.status = status;
+    }
+    
+    public static enum Status {
+        RUNNING,
+        STOPPED,
+        CRASHED
     }
 }

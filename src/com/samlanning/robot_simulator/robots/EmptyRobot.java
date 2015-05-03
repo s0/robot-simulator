@@ -8,16 +8,19 @@ public class EmptyRobot implements Robot {
     @Override
     public void run(final RobotControl control) {
         
+        control.turnLeft();
+        control.turnLeft();
+        
         for(int i = 0; i < 3; i++){
             new Thread(){
                 @Override
                 public void run(){
-                    dos(control);
+                    //dos(control);
                 }
             }.start();
         }
         
-        
+        //dos(control);
     }
     
     public void dos(RobotControl control) {

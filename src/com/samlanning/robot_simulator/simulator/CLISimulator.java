@@ -48,8 +48,8 @@ public class CLISimulator {
         
         @Override
         public synchronized void newRobotState(Robot robot, RobotState state) {
-            System.out.format("Robot: %s at (%d, %d) facing %s running: %s\n",
-                robotNames.get(robot), state.x, state.y, state.direction, state.running);
+            System.out.format("Robot: %s at (%d, %d) facing %s and: %s\n",
+                robotNames.get(robot), state.x, state.y, state.direction, state.status);
             
         }
         
