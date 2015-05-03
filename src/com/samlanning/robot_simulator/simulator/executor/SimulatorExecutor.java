@@ -10,14 +10,12 @@ import com.samlanning.robot_simulator.simulator.executor.exceptions.StoppedExcep
 
 public class SimulatorExecutor {
     
-    private final RobotMap map;
     private final Robot[] robots;
     private final RobotExecutor[] robotExecutors;
     
     private State state = new State();
     
     public SimulatorExecutor(RobotMap map, Collection<Robot> robots, Listener listener) {
-        this.map = map;
         this.robots = robots.toArray(new Robot[robots.size()]);
         this.robotExecutors = new RobotExecutor[this.robots.length];
         

@@ -13,12 +13,10 @@ import com.samlanning.robot_simulator.simulator.executor.SimulatorExecutor;
 
 public class CLISimulator {
     
-    private final RobotMap map;
     private final Map<Robot, RobotState> robots;
     private final Map<Robot, String> robotNames;
     
     public CLISimulator(RobotMap map) {
-        this.map = map;
         this.robots = new HashMap<>();
         this.robotNames = new HashMap<>();
         
