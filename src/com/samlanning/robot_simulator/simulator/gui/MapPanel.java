@@ -4,9 +4,13 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JPanel;
@@ -39,6 +43,7 @@ public class MapPanel extends JPanel implements GUIState.Listener {
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
             RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
         Rectangle clip = g.getClipBounds();
         System.out.println(clip.width);
@@ -82,12 +87,27 @@ public class MapPanel extends JPanel implements GUIState.Listener {
         }
         
         // Add Robots
+        Map<Point, List<RobotsEnum>> overlappingRobots = new HashMap<>();
         for (Map.Entry<RobotsEnum, GUIRobotState> entry : state.robots().entrySet()) {
-            Rectangle r =
-                getRectangle(mapX, mapY, mapWidth, mapHeight, totalX, totalY,
-                    entry.getValue().state.x, entry.getValue().state.y);
-            System.out.println(entry.getValue().state.x);
-            paintRobot(g, r, entry.getKey());
+            Point p = new Point(entry.getValue().state.x, entry.getValue().state.y);
+            Rectangle r = getRectangle(mapX, mapY, mapWidth, mapHeight, totalX, totalY, p.x, p.y);
+            paintRobot(g, r, entry.getKey(), entry.getValue());
+            List<RobotsEnum> robots = overlappingRobots.get(p);
+            if(robots == null){
+                robots = new LinkedList<>();
+                overlappingRobots.put(p, robots);
+            }
+            robots.add(entry.getKey());
+        }
+        
+        // Add Overlapping Robots Indicators
+        for(Map.Entry<Point, List<RobotsEnum>> entry : overlappingRobots.entrySet()){
+            if(entry.getValue().size() > 1){
+                Rectangle r =
+                    getRectangle(mapX, mapY, mapWidth, mapHeight, totalX, totalY, entry.getKey().x,
+                        entry.getKey().y);
+                drawOverlappingIndicators(g, r, entry.getValue());
+            }
         }
     }
     
@@ -116,12 +136,51 @@ public class MapPanel extends JPanel implements GUIState.Listener {
         g.fillRect(clip.x + 1, clip.y + 1, clip.width - 2, clip.height - 2);
     }
     
-    private void paintRobot(Graphics g, Rectangle clip, RobotsEnum robot) {
+    private void paintRobot(Graphics g, Rectangle clip, RobotsEnum robot, GUIRobotState state) {
 
         System.out.println("Painting Robot");
         
         g.setColor(robot.color);
-        g.fillRect(clip.x + 10, clip.y + 10, clip.width - 20, clip.height - 20);
+        g.fillOval(clip.x + 10, clip.y + 10, clip.width - 20, clip.height - 20);
+        
+        g.setColor(Color.white);
+        
+        int angle = 0;
+        switch(state.state.direction){
+            case UP:
+                angle = 0;
+                break;
+            case RIGHT:
+                angle = 90;
+                break;
+            case DOWN:
+                angle = 180;
+                break;
+            case LEFT:
+                angle = 270;
+                break;
+        }
+        
+        int centreX = clip.x + clip.width / 2;
+        int centreY = clip.y + clip.height / 2;
+        int length = clip.width / 2 - 15;
+        int otherX = centreX + length;
+        int otherY = centreY;
+        
+        g.drawLine(centreX, centreY, otherX, otherY);
+        
+        
+    }
+    
+    private void drawOverlappingIndicators(Graphics g, Rectangle clip, List<RobotsEnum> robots){
+        g.setColor(Color.white);
+        g.fillRoundRect(clip.x + 5, clip.y + 5, 5 + 10 * robots.size(), 15, 5, 5);
+        int x = clip.x + 10;
+        for(RobotsEnum robot : robots){
+            g.setColor(robot.color);
+            g.fillOval(x, clip.y + 10, 5, 5);
+            x += 10;
+        }
     }
     
 }
