@@ -41,7 +41,7 @@ public class SimulatorExecutor {
         
         private boolean running = false;
         private boolean stopped = false;
-        private long interval = 400;
+        private long interval = 1000;
         
         private Set<Thread> sleeping = new HashSet<>();
         

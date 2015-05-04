@@ -21,6 +21,8 @@ public class GUIState {
     private RobotMap map;
     private SimulatorExecutor currentSimulation;
     
+    private long animationDuration = 500;
+    
     /**
      * Must only be accessed from swing dispatch thread
      */
@@ -57,9 +59,21 @@ public class GUIState {
     
     public class GUIRobotState {
         public final RobotState state;
+        public final RobotState previousState;
+        public final long animatingFrom;
+        public final long animatingTo;
         
-        private GUIRobotState(RobotState state){
+        
+        private GUIRobotState(GUIRobotState previous, RobotState state){
             this.state = state;
+            if(previous == null){
+                animatingFrom = animatingTo = System.currentTimeMillis();
+                this.previousState = null;
+            } else {
+                animatingFrom = System.currentTimeMillis();
+                animatingTo = animatingFrom + animationDuration;
+                this.previousState = previous.state;
+            }
         }
     }
     
@@ -72,7 +86,7 @@ public class GUIState {
                 @Override
                 public void run() {
                     
-                    robots.put(robot, new GUIRobotState(state));
+                    robots.put(robot, new GUIRobotState(robots.get(robot), state));
                     
                     for (Listener listener : listeners)
                         listener.update();

@@ -10,7 +10,6 @@ import javax.swing.JFrame;
 
 import com.samlanning.robot_simulator.maps.BasicMap;
 import com.samlanning.robot_simulator.robots.RobotsEnum;
-import com.samlanning.robot_simulator.simulator.gui.GUIState.Listener;
 
 public class MainWindow extends JFrame {
     
@@ -25,15 +24,6 @@ public class MainWindow extends JFrame {
         
         mapPanel = new MapPanel(state);
         this.add(mapPanel, BorderLayout.CENTER);
-        
-        state.addListener(new Listener(){
-
-            @Override
-            public void update() {
-                System.out.println("UPDATE!");
-            }
-            
-        });
         
         JButton start = new JButton("Start");
         start.addActionListener(new ActionListener(){
