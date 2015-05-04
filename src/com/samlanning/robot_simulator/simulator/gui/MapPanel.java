@@ -15,10 +15,11 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 
-import com.samlanning.robot_simulator.maps.MapBlock;
-import com.samlanning.robot_simulator.maps.RobotMap;
+import com.samlanning.robot_simulator.iface.MapBlock;
+import com.samlanning.robot_simulator.iface.RobotMap;
 import com.samlanning.robot_simulator.robots.RobotsEnum;
 import com.samlanning.robot_simulator.simulator.executor.Direction;
+import com.samlanning.robot_simulator.simulator.executor.RobotState;
 import com.samlanning.robot_simulator.simulator.gui.GUIState.GUIRobotState;
 
 public class MapPanel extends JPanel implements GUIState.Listener {
@@ -39,7 +40,7 @@ public class MapPanel extends JPanel implements GUIState.Listener {
     public void update() {
         animationThread.drawFrames(true);
     }
-
+    
     @Override
     public void updateFrameDuration(long duration) {
         animationThread.updateFrameDuration(duration);
@@ -160,10 +161,14 @@ public class MapPanel extends JPanel implements GUIState.Listener {
         long currentTime = System.currentTimeMillis();
         double animationRemaining = 0;
         
-        g.setColor(robot.color);
-        
         int robotX = clip.x;
         int robotY = clip.y;
+        
+        if (state.state.status == RobotState.Status.CRASHED) {
+            // Move into wall
+            robotX += tileWidth * state.state.direction.vectorX() * 0.2;
+            robotY += tileHeight * state.state.direction.vectorY() * 0.2;
+        }
         
         if (currentTime < state.animatingTo) {
             animationRemaining =
@@ -177,6 +182,29 @@ public class MapPanel extends JPanel implements GUIState.Listener {
                 robotY += (state.previousState.y - state.state.y) * tileHeight * animationRemaining;
                 animated = true;
             }
+            if (state.state.status == RobotState.Status.CRASHED) {
+                // Move into wall
+                double mul;
+                if (animationRemaining > 0.5) {
+                    mul = animationRemaining * 3 - 2;
+                } else {
+                    mul = 0 - animationRemaining;
+                }
+                robotX -= tileWidth * mul * state.state.direction.vectorX() * 0.2;
+                robotY -= tileHeight * mul * state.state.direction.vectorY() * 0.2;
+                animated = true;
+            }
+        }
+        
+        if (state.state.status == RobotState.Status.RUNNING)
+            g.setColor(robot.color);
+        else {
+            int alpha = 100;
+            if (currentTime < state.animatingTo) {
+                alpha += 155 * animationRemaining;
+            }
+            g.setColor(new Color(robot.color.getRed(), robot.color.getGreen(), robot.color
+                .getBlue(), alpha));
         }
         
         g.fillOval(robotX + 10, robotY + 10, clip.width - 20, clip.height - 20);
@@ -242,7 +270,6 @@ public class MapPanel extends JPanel implements GUIState.Listener {
         @Override
         public void run() {
             long lastFrame = System.currentTimeMillis();
-            int i = 0;
             while (true) {
                 long target = lastFrame + frameDuration;
                 long current = System.currentTimeMillis();
@@ -258,11 +285,6 @@ public class MapPanel extends JPanel implements GUIState.Listener {
                 }
                 lastFrame = System.currentTimeMillis();
                 MapPanel.this.repaint();
-                
-                i = (i + 1) % 8;
-                for (int j = 0; j <= i; j++)
-                    System.out.print('-');
-                System.out.println();
             }
         }
         
@@ -271,19 +293,19 @@ public class MapPanel extends JPanel implements GUIState.Listener {
             notify();
         }
         
-        public synchronized void updateFrameDuration(long duration){
+        public synchronized void updateFrameDuration(long duration) {
             this.frameDuration = duration;
             this.interrupt();
         }
         
     }
-
+    
     @Override
     public void updateAnimationDuration(long duration) {}
-
+    
     @Override
     public void updateDelay(long duration) {}
-
+    
     @Override
     public void updateRunning(boolean running) {}
     

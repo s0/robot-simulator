@@ -9,7 +9,7 @@ import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
-import com.samlanning.robot_simulator.maps.RobotMap;
+import com.samlanning.robot_simulator.iface.RobotMap;
 import com.samlanning.robot_simulator.robots.RobotsEnum;
 import com.samlanning.robot_simulator.simulator.executor.RobotState;
 import com.samlanning.robot_simulator.simulator.executor.SimulatorExecutor;
@@ -23,8 +23,8 @@ public class GUIState {
     private boolean running;
     
     private long frameDuration = 50;
-    private long animationDuration = 500;
-    private long robotActionDelay = 500;
+    private long animationDuration = 100;
+    private long robotActionDelay = 100;
     
     /**
      * Must only be accessed from swing dispatch thread
@@ -95,7 +95,6 @@ public class GUIState {
     }
     
     protected synchronized void setAnimationDuration(long duration) {
-        System.out.println("animation: " + duration);
         animationDuration = duration;
         if (currentSimulation != null)
             currentSimulation.setDelay(animationDuration + robotActionDelay);
@@ -155,6 +154,25 @@ public class GUIState {
         public void updateAnimationDuration(long duration);
         public void updateDelay(long delay);
         public void updateRunning(boolean running);
+    }
+    
+    public static abstract class Adapter implements Listener {
+
+        @Override
+        public void update() {}
+
+        @Override
+        public void updateFrameDuration(long duration) {}
+
+        @Override
+        public void updateAnimationDuration(long duration) {}
+
+        @Override
+        public void updateDelay(long delay) {}
+
+        @Override
+        public void updateRunning(boolean running) {}
+        
     }
     
 }

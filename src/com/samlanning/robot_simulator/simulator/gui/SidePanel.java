@@ -1,18 +1,26 @@
 package com.samlanning.robot_simulator.simulator.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-import com.samlanning.robot_simulator.maps.BasicMap;
+import com.samlanning.robot_simulator.maps.BasicMap1;
+import com.samlanning.robot_simulator.maps.MapsEnum;
 import com.samlanning.robot_simulator.robots.RobotsEnum;
+import com.samlanning.robot_simulator.simulator.gui.GUIState.GUIRobotState;
 import com.samlanning.robot_simulator.simulator.gui.GUIState.Listener;
 
 public class SidePanel extends JPanel {
@@ -28,7 +36,35 @@ public class SidePanel extends JPanel {
     private void setup() {
         
         this.add(new Config(), BorderLayout.PAGE_START);
-        this.add(new Buttons(), BorderLayout.PAGE_END);
+        this.add(new Info(), BorderLayout.CENTER);
+        
+        
+        final JButton btnToggle = new JButton("Play");
+        btnToggle.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                state.toggle();
+            }
+            
+        });
+        
+        this.add(btnToggle, BorderLayout.PAGE_END);
+        
+        state.addListener(new GUIState.Adapter() {
+            
+            @Override
+            public void updateRunning(boolean running) {
+                if (running) {
+                    btnToggle.setText("Pause");
+                } else {
+                    btnToggle.setText("Play");
+                }
+            }
+            
+        });
+        
+        
         
     }
     
@@ -101,10 +137,7 @@ public class SidePanel extends JPanel {
                 }
             });
             
-            state.addListener(new Listener() {
-                
-                @Override
-                public void update() {}
+            state.addListener(new GUIState.Adapter() {
                 
                 @Override
                 public void updateFrameDuration(long duration) {
@@ -118,13 +151,9 @@ public class SidePanel extends JPanel {
                 
                 @Override
                 public void updateDelay(long delay) {
-                    System.out.println("Update Delay: " + delay);
                     fieldDelay.setText(String.valueOf(delay));
                     
                 }
-                
-                @Override
-                public void updateRunning(boolean running) {}
                 
             });
             
@@ -133,77 +162,92 @@ public class SidePanel extends JPanel {
         }
     }
     
-    private class Buttons extends JPanel {
+    private class Info extends JPanel {
         
-        public Buttons() {
-            SpringLayout layout = new SpringLayout();
-            this.setLayout(layout);
+        public Info() {
+            super(new GridBagLayout());
             
-            final JButton btnStart = new JButton("Start");
-            btnStart.addActionListener(new ActionListener() {
+            GridBagConstraints c = new GridBagConstraints();
+            c.ipadx = 6;
+            c.ipady = 6;
+            c.gridy = 0;
+            c.gridx = 0;
+            c.anchor = GridBagConstraints.LINE_START;
+            
+            c.gridwidth = 2;
+            this.add(new JLabel("Robots:"), c);
+            c.gridwidth = 1;
+            c.gridy++;
+            
+            // Robots
+            
+            final Map<RobotsEnum, JLabel> labelMap = new EnumMap<>(RobotsEnum.class);
+            
+            for (RobotsEnum robot : RobotsEnum.values()) {
+                JLabel name = new JLabel(robot.name() + ": ");
+                name.setForeground(robot.color);
+                this.add(name, c);
+                JLabel status = new JLabel("NONE");
+                c.gridx = 1;
+                this.add(status, c);
+                c.gridy++;
+                c.gridx = 0;
+                labelMap.put(robot, status);
+            }
+            
+            state.addListener(new GUIState.Adapter() {
                 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void update() {
+                    for (Map.Entry<RobotsEnum, GUIRobotState> entry : state.robots().entrySet()) {
+                        JLabel label = labelMap.get(entry.getKey());
+                        label.setText(entry.getValue().state.status.toString());
+                        switch(entry.getValue().state.status){
+                            case STOPPED:
+                                label.setForeground(null);
+                                break;
+                            case RUNNING:
+                                label.setForeground(new Color(0, 200, 0));
+                                break;
+                            case CRASHED:
+                                label.setForeground(new Color(200, 0, 0));
+                                break;
+                            case FINISHED:
+                                label.setForeground(new Color(0, 0, 200));
+                                break;
+                        }
+                    }
+                }
+                
+            });
+            
+            // Maps
+            
+            c.gridy++;
+            c.gridwidth = 2;
+            this.add(new JLabel("Maps:"), c);
+            c.gridwidth = 1;
+            c.gridy++;
+            
+            for (final MapsEnum map : MapsEnum.values()) {
+                JLabel name = new JLabel(map.name() + ": ");
+                this.add(name, c);
+                JButton status = new JButton("Load");
+                c.gridx = 1;
+                this.add(status, c);
+                c.gridy++;
+                c.gridx = 0;
+                status.addActionListener(new ActionListener() {
                     
-                    state.init(new BasicMap(), Arrays.asList(RobotsEnum.values()));
-                }
-                
-            });
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        
+                        state.init(map.map, Arrays.asList(RobotsEnum.values()));
+                    }
+                    
+                });
+            }
             
-            this.add(btnStart);
-            
-            final JButton btnToggle = new JButton("Play");
-            btnToggle.addActionListener(new ActionListener() {
-                
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    state.toggle();
-                }
-                
-            });
-            
-            this.add(btnToggle);
-            
-            // JButton btnStop = new JButton("Stop");
-            // btnToggle.addActionListener(new ActionListener() {
-            //
-            // @Override
-            // public void actionPerformed(ActionEvent e) {
-            // state.init(new BasicMap(), Arrays.asList(RobotsEnum.values()));
-            // state.stop();
-            // }
-            //
-            // });
-            //
-            // this.add(btnStop);
-            
-            state.addListener(new Listener() {
-                
-                @Override
-                public void update() {}
-                
-                @Override
-                public void updateFrameDuration(long duration) {}
-                
-                @Override
-                public void updateAnimationDuration(long duration) {}
-                
-                @Override
-                public void updateDelay(long delay) {}
-                
-                @Override
-                public void updateRunning(boolean running) {
-                    if (running) {
-                        btnToggle.setText("Pause");
-                    } else {
-                        btnToggle.setText("Play");
-                    }  
-                }
-                
-            });
-            
-            // Layout
-            SpringUtilities.makeCompactGrid(this, 2, 1, 6, 6, 6, 6);
         }
         
     }

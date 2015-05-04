@@ -3,8 +3,8 @@ package com.samlanning.robot_simulator.simulator;
 import java.io.IOException;
 import java.util.EnumMap;
 
-import com.samlanning.robot_simulator.maps.BasicMap;
-import com.samlanning.robot_simulator.maps.RobotMap;
+import com.samlanning.robot_simulator.iface.RobotMap;
+import com.samlanning.robot_simulator.maps.BasicMap1;
 import com.samlanning.robot_simulator.robots.RobotsEnum;
 import com.samlanning.robot_simulator.simulator.executor.RobotState;
 import com.samlanning.robot_simulator.simulator.executor.SimulatorExecutor;
@@ -33,7 +33,7 @@ public class CLISimulator {
     }
     
     public static void main(String[] args) {
-        new CLISimulator(new BasicMap());
+        new CLISimulator(new BasicMap1());
     }
     
     public class ExecutorListener implements SimulatorExecutor.Listener {

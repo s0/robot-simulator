@@ -1,6 +1,5 @@
 package com.samlanning.robot_simulator.iface;
 
-import com.samlanning.robot_simulator.maps.MapBlock;
 
 public interface RobotControl {
     

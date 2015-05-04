@@ -1,4 +1,6 @@
-package com.samlanning.robot_simulator.maps;
+package com.samlanning.robot_simulator.iface;
+
+import com.samlanning.robot_simulator.simulator.executor.Direction;
 
 public abstract class RobotMap {
     
@@ -8,11 +10,13 @@ public abstract class RobotMap {
     private MapBlock[][] map = new MapBlock[0][0];
     private int startX;
     private int startY;
+    private Direction startDirection;
     
-    protected void setMap(MapBlock[][] map, int startX, int startY){
+    protected void setMap(MapBlock[][] map, int startX, int startY, Direction startDirection){
         this.map = map;
         this.startX = startX;
         this.startY = startY;
+        this.startDirection = startDirection;
     }
     
     public int getWidth(){
@@ -33,6 +37,10 @@ public abstract class RobotMap {
     
     public int getStartY(){
         return startY;
+    }
+    
+    public Direction getStartDirection(){
+        return startDirection;
     }
     
 }

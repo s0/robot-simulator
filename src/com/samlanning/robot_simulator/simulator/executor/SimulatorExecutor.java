@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.samlanning.robot_simulator.maps.RobotMap;
+import com.samlanning.robot_simulator.iface.RobotMap;
 import com.samlanning.robot_simulator.robots.RobotsEnum;
 import com.samlanning.robot_simulator.simulator.executor.exceptions.StoppedException;
 
@@ -37,7 +37,6 @@ public class SimulatorExecutor {
     }
     
     public void setDelay(long delay) {
-        System.out.println("Set Delay: " + delay);
         state.setDelay(delay);
     }
     

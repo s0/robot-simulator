@@ -2,9 +2,9 @@ package com.samlanning.robot_simulator.robots;
 
 import java.util.Random;
 
+import com.samlanning.robot_simulator.iface.MapBlock;
 import com.samlanning.robot_simulator.iface.Robot;
 import com.samlanning.robot_simulator.iface.RobotControl;
-import com.samlanning.robot_simulator.maps.MapBlock;
 
 public class RandomRobot implements Robot {
 

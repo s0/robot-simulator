@@ -2,9 +2,9 @@ package com.samlanning.robot_simulator.simulator.executor;
 
 import java.util.concurrent.Semaphore;
 
+import com.samlanning.robot_simulator.iface.MapBlock;
 import com.samlanning.robot_simulator.iface.RobotControl;
-import com.samlanning.robot_simulator.maps.MapBlock;
-import com.samlanning.robot_simulator.maps.RobotMap;
+import com.samlanning.robot_simulator.iface.RobotMap;
 import com.samlanning.robot_simulator.robots.RobotsEnum;
 import com.samlanning.robot_simulator.simulator.executor.SimulatorExecutor.Listener;
 import com.samlanning.robot_simulator.simulator.executor.exceptions.CrashedException;
@@ -20,10 +20,11 @@ class RobotExecutor extends Thread {
     
     private int x;
     private int y;
-    private Direction direction = Direction.LEFT;
+    private Direction direction;
     private boolean running = true;
     
-    public RobotExecutor(RobotMap map, Listener listener, SimulatorExecutor.State state, RobotsEnum robot) {
+    public RobotExecutor(RobotMap map, Listener listener, SimulatorExecutor.State state,
+        RobotsEnum robot) {
         this.map = map;
         this.listener = listener;
         this.state = state;
@@ -31,6 +32,7 @@ class RobotExecutor extends Thread {
         
         x = map.getStartX();
         y = map.getStartY();
+        direction = map.getStartDirection();
     }
     
     @Override
@@ -42,7 +44,7 @@ class RobotExecutor extends Thread {
             System.out.println("Robot Executor Interrupted");
             return;
         } catch (StoppedException e) {
-            System.out.println("Robot Executor Stopped");
+            // System.out.println("Robot Executor Stopped");
             return;
         }
     }
@@ -55,7 +57,7 @@ class RobotExecutor extends Thread {
     }
     
     private void interruptibleRun() throws InterruptedException, StoppedException {
-        System.out.println("Starting Robot Executor");
+        // System.out.println("Starting Robot Executor");
         
         updateListener(RobotState.Status.RUNNING);
         
@@ -63,17 +65,17 @@ class RobotExecutor extends Thread {
         try {
             robot.robot.run(new RobotControlImpl());
         } catch (InternalStopException e) {
-            System.out.println("Robot Executor Stopped By Simulator");
+            // System.out.println("Robot Executor Stopped By Simulator");
             return;
         } catch (CrashedException e) {
-            System.out.println("Robot Executor Stopped after Robot Crash");
+            // System.out.println("Robot Executor Stopped after Robot Crash");
             return;
         }
-        System.out.println("Robot Executor Stopped");
+        // System.out.println("Robot Executor Stopped");
         updateListener(RobotState.Status.STOPPED);
     }
     
-    private MapBlock getBlockAt(int x, int y){
+    private MapBlock getBlockAt(int x, int y) {
         if (x < 0 || x >= map.getWidth() || y < 0 || y >= map.getHeight())
             return MapBlock.WALL;
         return map.getBlock(x, y);
@@ -82,14 +84,20 @@ class RobotExecutor extends Thread {
     private synchronized void doMoveForward() {
         int newX = x + direction.vectorX();
         int newY = y + direction.vectorY();
-        if(getBlockAt(newX, newY) == MapBlock.WALL){
+        MapBlock block = getBlockAt(newX, newY);
+        if (block == MapBlock.WALL) {
             System.out.println("Robot Crashed");
             updateListener(RobotState.Status.CRASHED);
             throw new CrashedException();
         }
         x = newX;
         y = newY;
-        updateListener(RobotState.Status.RUNNING);
+        if (block == MapBlock.FINISH) {
+            updateListener(RobotState.Status.FINISHED);
+            throw new InternalStopException();
+        } else {
+            updateListener(RobotState.Status.RUNNING);
+        }
     }
     
     private synchronized void doTurnLeft() {

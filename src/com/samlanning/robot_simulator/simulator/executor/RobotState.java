@@ -16,6 +16,7 @@ public final class RobotState {
     public static enum Status {
         RUNNING,
         STOPPED,
-        CRASHED
+        CRASHED,
+        FINISHED
     }
 }
