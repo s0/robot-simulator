@@ -6,6 +6,8 @@ public enum MapsEnum {
     
     BASIC_1(new BasicMap1()),
     BASIC_2(new BasicMap2()),
+    BASIC_3(new BasicMap3()),
+    HARD_1(new HardMap1()),
     ;
     
     public final RobotMap map;
