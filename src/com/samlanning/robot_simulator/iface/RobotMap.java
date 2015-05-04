@@ -1,5 +1,7 @@
 package com.samlanning.robot_simulator.iface;
 
+import java.awt.Point;
+
 import com.samlanning.robot_simulator.simulator.executor.Direction;
 
 public abstract class RobotMap {
@@ -31,12 +33,8 @@ public abstract class RobotMap {
         return map[y][x];
     }
     
-    public int getStartX(){
-        return startX;
-    }
-    
-    public int getStartY(){
-        return startY;
+    public Point getStartPoint(){
+        return new Point(startX, startY);
     }
     
     public Direction getStartDirection(){

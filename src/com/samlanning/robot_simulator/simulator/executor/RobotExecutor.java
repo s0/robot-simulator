@@ -1,5 +1,6 @@
 package com.samlanning.robot_simulator.simulator.executor;
 
+import java.awt.Point;
 import java.util.concurrent.Semaphore;
 
 import com.samlanning.robot_simulator.iface.MapBlock;
@@ -30,8 +31,9 @@ class RobotExecutor extends Thread {
         this.state = state;
         this.robot = robot;
         
-        x = map.getStartX();
-        y = map.getStartY();
+        Point start = map.getStartPoint();
+        x = start.x;
+        y = start.y;
         direction = map.getStartDirection();
     }
     
