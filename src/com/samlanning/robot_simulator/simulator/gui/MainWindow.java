@@ -16,10 +16,11 @@ public class MainWindow extends JFrame {
         this.setTitle("Robot Simulator");
         this.setLayout(new BorderLayout());
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setSize(600, 500);
+        this.setLocationRelativeTo(null);
         
         mapPanel = new MapPanel(state);
         this.add(mapPanel, BorderLayout.CENTER);
-        
         
         Box b = new Box(BoxLayout.Y_AXIS);
         b.add(new SidePanel(state));

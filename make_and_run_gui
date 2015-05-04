@@ -1,0 +1,9 @@
+#! /bin/bash
+
+find src -name "*.class" -delete
+find -name "*.java" > sources.txt
+javac -verbose @sources.txt
+rm -f sources.txt
+jar cfe robot_program_gui.jar com.samlanning.robot_simulator.simulator.GUISimulator -C src com
+find src -name "*.class" -delete
+java -jar robot_program_gui.jar
