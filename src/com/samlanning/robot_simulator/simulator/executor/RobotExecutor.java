@@ -18,8 +18,8 @@ class RobotExecutor extends Thread {
     private final SimulatorExecutor.State state;
     private final RobotsEnum robot;
     
-    private int x = 0;
-    private int y = 0;
+    private int x;
+    private int y;
     private Direction direction = Direction.LEFT;
     private boolean running = true;
     
@@ -28,6 +28,9 @@ class RobotExecutor extends Thread {
         this.listener = listener;
         this.state = state;
         this.robot = robot;
+        
+        x = map.getStartX();
+        y = map.getStartY();
     }
     
     @Override

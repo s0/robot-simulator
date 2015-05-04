@@ -29,14 +29,20 @@ public class MapPanel extends JPanel implements GUIState.Listener {
     protected MapPanel(GUIState state) {
         this.state = state;
         
-        state.addListener(this);
         animationThread = new AnimationThread();
         animationThread.start();
+        
+        state.addListener(this);
     }
     
     @Override
     public void update() {
         animationThread.drawFrames(true);
+    }
+
+    @Override
+    public void updateFrameDuration(long duration) {
+        animationThread.updateFrameDuration(duration);
     }
     
     @Override
@@ -226,7 +232,7 @@ public class MapPanel extends JPanel implements GUIState.Listener {
     
     private class AnimationThread extends Thread {
         
-        private long frameDelay = 50;
+        private long frameDuration = 50;
         private boolean drawFrames = false;
         
         public AnimationThread() {
@@ -238,7 +244,7 @@ public class MapPanel extends JPanel implements GUIState.Listener {
             long lastFrame = System.currentTimeMillis();
             int i = 0;
             while (true) {
-                long target = lastFrame + frameDelay;
+                long target = lastFrame + frameDuration;
                 long current = System.currentTimeMillis();
                 try {
                     if (current < target)
@@ -264,6 +270,21 @@ public class MapPanel extends JPanel implements GUIState.Listener {
             this.drawFrames = draw;
             notify();
         }
+        
+        public synchronized void updateFrameDuration(long duration){
+            this.frameDuration = duration;
+            this.interrupt();
+        }
+        
     }
+
+    @Override
+    public void updateAnimationDuration(long duration) {}
+
+    @Override
+    public void updateDelay(long duration) {}
+
+    @Override
+    public void updateRunning(boolean running) {}
     
 }

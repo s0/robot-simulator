@@ -21,7 +21,7 @@ public class CLISimulator {
         }
         
         SimulatorExecutor executor =
-            new SimulatorExecutor(map, robots.keySet(), new ExecutorListener());
+            new SimulatorExecutor(map, robots.keySet(), new ExecutorListener(), 1000);
         executor.setRunning(true);
         
         try {

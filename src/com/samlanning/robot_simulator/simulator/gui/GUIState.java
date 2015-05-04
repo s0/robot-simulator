@@ -20,41 +20,95 @@ public class GUIState {
     
     private RobotMap map;
     private SimulatorExecutor currentSimulation;
+    private boolean running;
     
+    private long frameDuration = 50;
     private long animationDuration = 500;
+    private long robotActionDelay = 500;
     
     /**
      * Must only be accessed from swing dispatch thread
      */
     private Set<Listener> listeners = Collections.synchronizedSet(new HashSet<Listener>());
     
-    protected void addListener(final Listener listener) {
+    protected synchronized void addListener(final Listener listener) {
         listeners.add(listener);
+        listener.updateFrameDuration(frameDuration);
+        listener.updateAnimationDuration(animationDuration);
+        listener.updateDelay(robotActionDelay);
     }
     
     protected void init(RobotMap map, Collection<RobotsEnum> activatedRobots) {
-        if(!javax.swing.SwingUtilities.isEventDispatchThread())
+        if (!javax.swing.SwingUtilities.isEventDispatchThread())
             throw new RuntimeException("Must be run in swing dispatch thread");
         
         this.map = map;
         
         robots.clear();
-        if (currentSimulation != null)
-            currentSimulation.stop();
+        stop();
         
-        currentSimulation = new SimulatorExecutor(map, activatedRobots, new ExecutorListener());
+        currentSimulation =
+            new SimulatorExecutor(map, activatedRobots, new ExecutorListener(), animationDuration
+                + robotActionDelay);
     }
     
-    protected void setRunning(boolean running) {
-        currentSimulation.setRunning(running);
+    protected void toggle() {
+        if (!javax.swing.SwingUtilities.isEventDispatchThread())
+            throw new RuntimeException("Must be run in swing dispatch thread");
+        
+        if (currentSimulation != null) {
+            running = !running;
+            currentSimulation.setRunning(running);
+            for (Listener l : listeners)
+                l.updateRunning(running);
+        }
     }
     
-    protected RobotMap map(){
+    protected void stop() {
+        if (currentSimulation != null) {
+            currentSimulation.stop();
+            currentSimulation = null;
+            running = false;
+            for (Listener l : listeners)
+                l.updateRunning(running);
+        }
+    }
+    
+    protected RobotMap map() {
+        if (!javax.swing.SwingUtilities.isEventDispatchThread())
+            throw new RuntimeException("Must be run in swing dispatch thread");
+        
         return map;
     }
     
-    protected Map<RobotsEnum, GUIRobotState> robots(){
+    protected Map<RobotsEnum, GUIRobotState> robots() {
+        if (!javax.swing.SwingUtilities.isEventDispatchThread())
+            throw new RuntimeException("Must be run in swing dispatch thread");
+        
         return Collections.unmodifiableMap(robots);
+    }
+    
+    protected synchronized void setFramerate(long framerate) {
+        frameDuration = 1000 / framerate;
+        for (Listener l : listeners)
+            l.updateFrameDuration(frameDuration);
+    }
+    
+    protected synchronized void setAnimationDuration(long duration) {
+        System.out.println("animation: " + duration);
+        animationDuration = duration;
+        if (currentSimulation != null)
+            currentSimulation.setDelay(animationDuration + robotActionDelay);
+        for (Listener l : listeners)
+            l.updateAnimationDuration(animationDuration);
+    }
+    
+    protected synchronized void setDelay(long delay) {
+        robotActionDelay = delay;
+        if (currentSimulation != null)
+            currentSimulation.setDelay(animationDuration + robotActionDelay);
+        for (Listener l : listeners)
+            l.updateDelay(delay);
     }
     
     public class GUIRobotState {
@@ -63,10 +117,9 @@ public class GUIState {
         public final long animatingFrom;
         public final long animatingTo;
         
-        
-        private GUIRobotState(GUIRobotState previous, RobotState state){
+        private GUIRobotState(GUIRobotState previous, RobotState state) {
             this.state = state;
-            if(previous == null){
+            if (previous == null) {
                 animatingFrom = animatingTo = System.currentTimeMillis();
                 this.previousState = null;
             } else {
@@ -98,6 +151,10 @@ public class GUIState {
     
     protected static interface Listener {
         public void update();
+        public void updateFrameDuration(long duration);
+        public void updateAnimationDuration(long duration);
+        public void updateDelay(long delay);
+        public void updateRunning(boolean running);
     }
     
 }

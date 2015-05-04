@@ -13,11 +13,14 @@ public class SimulatorExecutor {
     private final RobotsEnum[] robots;
     private final RobotExecutor[] robotExecutors;
     
-    private State state = new State();
+    private final State state;
     
-    public SimulatorExecutor(RobotMap map, Collection<RobotsEnum> robots, Listener listener) {
+    public SimulatorExecutor(RobotMap map, Collection<RobotsEnum> robots, Listener listener,
+        long delay) {
         this.robots = robots.toArray(new RobotsEnum[robots.size()]);
         this.robotExecutors = new RobotExecutor[this.robots.length];
+        
+        this.state = new State(delay);
         
         for (int i = 0; i < this.robots.length; i++) {
             this.robotExecutors[i] = new RobotExecutor(map, listener, state, this.robots[i]);
@@ -33,6 +36,11 @@ public class SimulatorExecutor {
         state.stop();
     }
     
+    public void setDelay(long delay) {
+        System.out.println("Set Delay: " + delay);
+        state.setDelay(delay);
+    }
+    
     public static interface Listener {
         public void newRobotState(RobotsEnum robot, RobotState state);
     }
@@ -41,9 +49,13 @@ public class SimulatorExecutor {
         
         private boolean running = false;
         private boolean stopped = false;
-        private long interval = 1000;
+        private long delay;
         
         private Set<Thread> sleeping = new HashSet<>();
+        
+        public State(long delay) {
+            this.delay = delay;
+        }
         
         public synchronized void waitUntilRunning() throws StoppedException {
             while (!running) {
@@ -80,7 +92,7 @@ public class SimulatorExecutor {
             while (true) {
                 
                 long currentTime = System.currentTimeMillis();
-                long waitingTo = waitingFrom + interval;
+                long waitingTo = waitingFrom + delay;
                 
                 if (currentTime < waitingTo) {
                     try {
@@ -100,6 +112,8 @@ public class SimulatorExecutor {
                          * to wait will be adjusted.
                          */
                     }
+                } else {
+                    break;
                 }
             }
             removeCurrentThreadFromSleeping();
@@ -114,13 +128,22 @@ public class SimulatorExecutor {
             }
         }
         
+        private synchronized void setDelay(long delay) {
+            if (!stopped) {
+                this.delay = delay;
+                for (Thread thread : sleeping)
+                    thread.interrupt();
+            } else {
+                throw new RuntimeException("Already Stopped");
+            }
+        }
+        
         private synchronized void stop() {
             this.running = false;
             this.stopped = true;
             notifyAll();
-            for (Thread thread : sleeping) {
+            for (Thread thread : sleeping)
                 thread.interrupt();
-            }
             sleeping.clear();
         }
         

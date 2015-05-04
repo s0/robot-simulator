@@ -6,9 +6,13 @@ public abstract class RobotMap {
      * map[y][x]
      */
     private MapBlock[][] map = new MapBlock[0][0];
+    private int startX;
+    private int startY;
     
-    protected void setMap(MapBlock[][] map){
+    protected void setMap(MapBlock[][] map, int startX, int startY){
         this.map = map;
+        this.startX = startX;
+        this.startY = startY;
     }
     
     public int getWidth(){
@@ -21,6 +25,14 @@ public abstract class RobotMap {
     
     public MapBlock getBlock(int x, int y){
         return map[y][x];
+    }
+    
+    public int getStartX(){
+        return startX;
+    }
+    
+    public int getStartY(){
+        return startY;
     }
     
 }

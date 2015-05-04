@@ -1,15 +1,10 @@
 package com.samlanning.robot_simulator.simulator.gui;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Arrays;
 
-import javax.swing.JButton;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-
-import com.samlanning.robot_simulator.maps.BasicMap;
-import com.samlanning.robot_simulator.robots.RobotsEnum;
 
 public class MainWindow extends JFrame {
     
@@ -25,18 +20,10 @@ public class MainWindow extends JFrame {
         mapPanel = new MapPanel(state);
         this.add(mapPanel, BorderLayout.CENTER);
         
-        JButton start = new JButton("Start");
-        start.addActionListener(new ActionListener(){
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                state.init(new BasicMap(), Arrays.asList(RobotsEnum.values()));
-                state.setRunning(true);
-            }
-            
-        });
-        this.add(start, BorderLayout.LINE_END);
         
+        Box b = new Box(BoxLayout.Y_AXIS);
+        b.add(new SidePanel(state));
+        this.add(b, BorderLayout.LINE_END);
         
     }
     
