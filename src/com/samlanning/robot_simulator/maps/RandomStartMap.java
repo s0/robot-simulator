@@ -4,8 +4,13 @@ import java.awt.Point;
 import java.util.Random;
 
 import com.samlanning.robot_simulator.iface.MapBlock;
+import com.samlanning.robot_simulator.iface.RobotMap;
 
-public class RandomStartMap extends BasicMap3 {
+public class RandomStartMap extends RobotMap {
+    
+    public RandomStartMap(RobotMap base){
+        this.setMap(base);
+    }
     
     @Override
     public Point getStartPoint(){

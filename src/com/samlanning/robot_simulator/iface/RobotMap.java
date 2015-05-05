@@ -9,7 +9,7 @@ public abstract class RobotMap {
     /**
      * map[y][x]
      */
-    private MapBlock[][] map = new MapBlock[0][0];
+    protected MapBlock[][] map = new MapBlock[0][0];
     private int startX;
     private int startY;
     private Direction startDirection;
@@ -19,6 +19,13 @@ public abstract class RobotMap {
         this.startX = startX;
         this.startY = startY;
         this.startDirection = startDirection;
+    }
+    
+    protected void setMap(RobotMap base){
+        this.map = base.map;
+        this.startX = base.startX;
+        this.startY = base.startY;
+        this.startDirection = base.startDirection;
     }
     
     public int getWidth(){
