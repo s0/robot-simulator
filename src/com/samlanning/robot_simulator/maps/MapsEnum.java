@@ -9,6 +9,7 @@ public enum MapsEnum {
     BASIC_3(new BasicMap3()),
     RANDOM_START(new RandomStartMap()),
     HARD_1(new HardMap1()),
+    HARD_2(new HardMap2()),
     ;
     
     public final RobotMap map;
