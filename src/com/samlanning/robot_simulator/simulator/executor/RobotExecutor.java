@@ -65,6 +65,11 @@ class RobotExecutor extends Thread {
         
         // Start execution of robot
         try {
+            /**
+             * Wait until running so that robots that do nothing are only marked
+             * as stopped when the simulation has started.
+             */
+            state.waitUntilRunning();
             robot.robot.run(new RobotControlImpl());
         } catch (InternalStopException e) {
             // System.out.println("Robot Executor Stopped By Simulator");
