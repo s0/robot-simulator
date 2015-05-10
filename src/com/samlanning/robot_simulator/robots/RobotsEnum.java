@@ -9,7 +9,7 @@ import com.samlanning.robot_simulator.iface.Robot;
  */
 public enum RobotsEnum {
     
-    MY_ROBOT(new MyRobot(), new Color(100, 100, 100)),
+    MY_ROBOT(new CustomRobot(), new Color(100, 100, 100)),
     RANDOM(new RandomRobot(), new Color(0, 100, 100)),
     ;
     
