@@ -12,6 +12,7 @@ public enum RobotsEnum {
     SMART_ROBOT(new SmartRobot(), new Color(100, 100, 100)),
     MY_ROBOT(new CustomRobot(), new Color(100, 100, 100)),
     REMOTE_ROBOT(new RemoteRobot(), new Color(50, 50, 50)),
+    ADVANCED_ROBOT(new AdvancedRobot(), new Color(200, 50, 50)),
     //RANDOM(new RandomRobot(), new Color(0, 100, 100)),
     ;
     
