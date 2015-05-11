@@ -73,6 +73,7 @@ class RobotExecutor extends Thread {
             robot.robot.run(new RobotControlImpl());
         } catch (InternalStopException e) {
             // System.out.println("Robot Executor Stopped By Simulator");
+            updateListener(RobotState.Status.STOPPED);
             return;
         } catch (CrashedException e) {
             // System.out.println("Robot Executor Stopped after Robot Crash");
@@ -150,6 +151,11 @@ class RobotExecutor extends Thread {
             start();
             doTurnRight();
             finish();
+        }
+
+        @Override
+        public void stop() {
+            throw new InternalStopException();
         }
         
         @Override

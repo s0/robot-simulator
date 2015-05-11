@@ -9,6 +9,8 @@ public interface RobotControl {
     
     public void turnRight();
     
+    public void stop();
+    
     public MapBlock lookAhead();
     
 }
